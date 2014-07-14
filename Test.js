@@ -5,8 +5,8 @@ window.answerList = {
   C: $("#some_id"),
   D: $(".some_class"),
   E: $("input#some_id"),
-  F: $("div#some_id.some_class")
-  // G: $("div.some_class#some_id")
+  F: $("div#some_id.some_class"),
+  G: $("div.some_class#some_id")
 }
 
 var expectedResult = {
@@ -28,10 +28,10 @@ var expectedResult = {
   F: {
     DIV: 1
   },
-  // G: {
-  //   DIV: 1
-  // },
-  questions: 6
+  G: {
+    DIV: 1
+  },
+  questions: 7
 }
 
 

@@ -1,8 +1,8 @@
 var test$ = function() {
 window.answerList = {
   A: $("div"),
-  B: $("img.some_class")
-  // C: $("#some_id"),
+  B: $("img.some_class"),
+  C: $("#some_id"),
   // D: $(".some_class"),
   // E: $("input#some_id"),
   // F: $("div#some_id.some_class"),
@@ -16,9 +16,9 @@ var expectedResult = {
   B: {
     IMG: 1
   },
-  // C: {
-  //   DIV: 1
-  // },
+  C: {
+    DIV: 1
+  },
   // D: {
   //   DIV: 1,
   //   IMG: 1
@@ -31,7 +31,7 @@ var expectedResult = {
   // G: {
   //   DIV: 1
   // },
-  questions: 2
+  questions: 3
 }
 
 

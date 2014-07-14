@@ -17,9 +17,8 @@ var $ = function (selector) {
     returnClass(selector, elements)
   }
   else if(selector === "input#some_id"){
-
+    returnTagIDs(selector, elements)
   }
-
   return elements;
 }
 
@@ -60,14 +59,22 @@ function returnTagIDs(query, arrayToPush){
   var selectedID = selectorArr[1];
 
   var resultID = returnID("#"+selectedID);
-
+  if(resultID.tagName === selectedTag.toUpperCase()){
+    arrayToPush.push(resultID)
+  }
 }
 
 //function that retuns the dom element with the specific id
 function returnID(query, arrayToPush){
+  var result = [];
   var idName = query.split("#").join("");
   var selectedID = document.getElementById(idName);
-  arrayToPush.push(selectedID)
+  if(arrayToPush){
+    arrayToPush.push(selectedID);
+  }
+  result.push(selectedID);
+
+  return result
 }
 
 //functiont that returns the dom element with the speicified class

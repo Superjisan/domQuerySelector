@@ -4,8 +4,8 @@ window.answerList = {
   B: $("img.some_class"),
   C: $("#some_id"),
   D: $(".some_class"),
-  E: $("input#some_id")
-  // F: $("div#some_id.some_class"),
+  E: $("input#some_id"),
+  F: $("div#some_id.some_class")
   // G: $("div.some_class#some_id")
 }
 
@@ -25,13 +25,13 @@ var expectedResult = {
   },
   E: {
   },
-  // F: {
-  //   DIV: 1
-  // },
+  F: {
+    DIV: 1
+  },
   // G: {
   //   DIV: 1
   // },
-  questions: 5
+  questions: 6
 }
 
 

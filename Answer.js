@@ -22,6 +22,9 @@ var $ = function (selector) {
   else if(selector === "div#some_id.some_class"){
     returnTagIDClasses(selector, elements)
   }
+  else if( selector === "div.some_class#some_id"){
+    returnTagClassesID(selector, elements)
+  }
   return elements;
 } // end of $ function
 
@@ -69,7 +72,7 @@ function returnTagIDs(query, arrayToPush){
   if(resultID.tagName === selectedTag.toUpperCase()){
     arrayToPush.push(resultID)
   }
-}
+};
 
 function returnTagIDClasses(query, arrayToPush){
   //parse div, id, class from query
@@ -90,20 +93,43 @@ function returnTagIDClasses(query, arrayToPush){
       arrayToPush.push(currentClass);
     }
   }
+};
+
+function returnTagClassesID(query, arrayToPush){
+  var queryArrByID = query.split("#");
+  var querytagClass =  queryArrByID[0];
+  var queryID = queryArrByID[1];
+  var queryArrbyClass = querytagClass.split(".")
+  var queryTag = queryArrbyClass[0];
+  var queryClass = queryArrbyClass[1];
+  console.log("queryTag",queryTag);
+  console.log("queryClass", queryClass);
+  console.log("queryID", queryID);
+
+  var selectedID = returnID("#"+queryID);
+  console.log("selectedID:", selectedID);
+  var selectedIDclasses = selectedID.className;
+  console.log(selectedIDclasses);
+
+
+  if(selectedID.tagName === queryTag.toUpperCase() && selectedIDclasses.indexOf(queryClass) !== -1){
+    arrayToPush.push(selectedID);
+  }
+
 }
 
 //function that retuns the dom element with the specific id
 function returnID(query, arrayToPush){
-  var result = [];
+  var result;
   var idName = query.split("#").join("");
   var selectedID = document.getElementById(idName);
   if(arrayToPush){
     arrayToPush.push(selectedID);
   }
-  result.push(selectedID);
+  result = selectedID;
 
   return result
-}
+};
 
 //functiont that returns the dom element with the speicified class
 function returnClass(query, arrayToPush){
@@ -123,17 +149,3 @@ function returnClass(query, arrayToPush){
   return result
 }
 
-  // var selectedTagArr = []; //the tag to choose over
-
-  // returnTags(selectedTag.toUpperCase(), selectedTagArr)
-
-  // for(var i = 0; i < selectedTagArr.length; i++){
-  //   var currentTag = selectedTagArr[i];
-  //   if(currentTag.className){ // check if tag has a class
-  //     var classNames = currentTag.className.split(" ")
-  //     if(classNames.indexOf(selectorArr[1]) != -1 ){
-  //       console.log("we found the right class")
-  //       arrayToPush.push(selectedTagArr[i])
-  //     }
-  //   }
-  // }

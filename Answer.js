@@ -15,32 +15,32 @@ var $ = function (selector) {
       }
    } else if (elementsToGet.second){
       if(elementsToGet.first.element === "class"){
-
+          return
       } else if (elementsToGet.first.element  === "id"){
 
       } else if (elementsToGet.second.element === "class"){
-
+        returnTagClasses(selector, elements)
       } else {
         returnTagIDs(selector, elements)
       }
-
+   } else {
+     if(elementsToGet.first.element === "class"){
+        returnClass(selector, elements)
+     } else if (elementsToGet.first.element === "id"){
+        returnID(selector, elements)
+     } else {
+       returnTags(selector.toUpperCase(), elements)
+     }
    }
 
   if(selector === 'div'){
-    returnTags(selector.toUpperCase(), elements)
-  }else if(selector === 'img.some_class'){
-    returnTagClasses(selector, elements)
+    //returnTags(selector.toUpperCase(), elements)
   }else if(selector === "#some_id"){
-    returnID(selector, elements)
+    //returnID(selector, elements)
   }else if(selector === ".some_class"){
-    returnClass(selector, elements)
-  }else if(selector === "input#some_id"){
-    returnTagIDs(selector, elements)
-  }else if(selector === "div#some_id.some_class"){
-    //returnTagIDClasses(selector, elements)
-  }else if( selector === "div.some_class#some_id"){
-    //returnTagClassesID(selector, elements)
+    //returnClass(selector, elements)
   }
+
   return elements;
 } // end of $ function
 

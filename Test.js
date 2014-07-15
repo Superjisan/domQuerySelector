@@ -64,7 +64,6 @@ for (answerName in answerList){
   }
 
   var expected = computeString(expectedResult[answerName]);
-  console.log("tagList: ",tagList)
   var found = computeString(tagList);
   var result = (expected === found) ? "Yes" : "No";
   if (result === "Yes") testsPassed++;

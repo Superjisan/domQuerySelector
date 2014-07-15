@@ -1,28 +1,22 @@
+//TO DO: Refactor to be 50 or less lines
 var $ = function (selector) {
   var elements = [];
 
-  ////////////////////
-  // Your code here //
-  ////////////////////
+  this.querySelector = selector;
+
   if(selector === 'div'){
     returnTags(selector.toUpperCase(), elements)
-  }
-  else if(selector === 'img.some_class'){
+  }else if(selector === 'img.some_class'){
     returnTagClasses(selector, elements)
-  }
-  else if(selector === "#some_id"){
+  }else if(selector === "#some_id"){
     returnID(selector, elements)
-  }
-  else if(selector === ".some_class"){
+  }else if(selector === ".some_class"){
     returnClass(selector, elements)
-  }
-  else if(selector === "input#some_id"){
+  }else if(selector === "input#some_id"){
     returnTagIDs(selector, elements)
-  }
-  else if(selector === "div#some_id.some_class"){
+  }else if(selector === "div#some_id.some_class"){
     returnTagIDClasses(selector, elements)
-  }
-  else if( selector === "div.some_class#some_id"){
+  }else if( selector === "div.some_class#some_id"){
     returnTagClassesID(selector, elements)
   }
   return elements;
@@ -30,17 +24,75 @@ var $ = function (selector) {
 
 //function that return the dom tag elements
 function returnTags(tagName, arrayToPush){
-  var divs = document.getElementsByTagName(tagName);
-  var result = [];
+  var divs = document.getElementsByTagName(tagName), result = [];
   for(key in divs){
     if(key === "length") break; //usually the divs object will have extraneous functions and properties than what we need
     if(arrayToPush){
         arrayToPush.push(divs[key]);
-        result.push(divs[key])
       };
+    result.push(divs[key])
     }
   return result;
 };
+
+$.prototype.querySelectorParser(selector){
+  var first, second, third;
+  //check to see what the first element in the string is
+  if(selector[0] === "."){
+    //if class, check if it has an id element # in the string
+    if(selector.contains("#")){
+      //parse string based on #
+      var selectorArr = selector.split("#");
+      first = { name : selectorArr[0] , element: "class"};
+      second = { name : "#" + selectorArr[1], element: "id"}
+    } else {
+      first = { name : selector, elemen : "class"}
+    }
+  } else if (selector[0] === "#"){
+    //make this a function
+    if(selector.contains(".")){
+      //parse string based on .
+      var selectorArr = selector.split(".");
+      first = { name : selectorArr[0] , element: "id"};
+      second = { name : "." + selectorArr[1], element: "class"}
+    } else {
+      first = { name : selector, element : "id"}
+    }
+  } else { //assumption: you know that it starts with a tag
+    //check to see if string has both class and id
+    if(selector.contains("#") && selector.contains(".")){
+      //determine which comes first
+      var firstElemToSplit, secondElemToSplit;
+      var classIndex = selector.indexOf(".");
+      var idIndex = selector.indexOf("#");
+      if(classIndex < idIndex){
+        firstElemToParse = ".";
+        secondElemToSplit = "#";
+      }else{
+        firstElemToParse = "#";
+        secondElemToSplit = ".";
+      }
+      // to-do: set the right first, second, third object
+
+
+    }else if(selector.contains(".")){
+        //parse string based on .
+        var selectorArr = selector.split(".");
+        first = { name : selectorArr[0] , element: "tag"};
+        second = { name : "." + selectorArr[1], element: "class"}
+    } else if (selector.contains("#")){
+      var selectorArr = selector.split("#");
+      first = { name : selectorArr[0] , element: "tag"};
+      second = { name : "." + selectorArr[1], element: "id"}
+    } else {
+      first = {name : selector, element: "tag"}
+    }
+  }
+
+  return {
+    first: first, second: second, third: third
+  }
+}
 
 //function that returns the dom element if it is expressed by tag.class
 function returnTagClasses(query, arrayToPush){
@@ -76,7 +128,7 @@ function returnTagIDs(query, arrayToPush){
 
 function returnTagIDClasses(query, arrayToPush){
   //parse div, id, class from query
-  var queryArrbyClass = query.split(".")
+  var queryArrbyClass = query.split(".");
   var querytagID = queryArrbyClass[0];
   var queryClass = queryArrbyClass[1];
   var queryArrByID = querytagID.split("#");
@@ -102,20 +154,13 @@ function returnTagClassesID(query, arrayToPush){
   var queryArrbyClass = querytagClass.split(".")
   var queryTag = queryArrbyClass[0];
   var queryClass = queryArrbyClass[1];
-  console.log("queryTag",queryTag);
-  console.log("queryClass", queryClass);
-  console.log("queryID", queryID);
 
   var selectedID = returnID("#"+queryID);
   console.log("selectedID:", selectedID);
   var selectedIDclasses = selectedID.className;
-  console.log(selectedIDclasses);
-
 
   if(selectedID.tagName === queryTag.toUpperCase() && selectedIDclasses.indexOf(queryClass) !== -1){
-    arrayToPush.push(selectedID);
-  }
-
+    arrayToPush.push(selectedID);}
 }
 
 //function that retuns the dom element with the specific id
@@ -123,11 +168,8 @@ function returnID(query, arrayToPush){
   var result;
   var idName = query.split("#").join("");
   var selectedID = document.getElementById(idName);
-  if(arrayToPush){
-    arrayToPush.push(selectedID);
-  }
+  if(arrayToPush){ arrayToPush.push(selectedID);}
   result = selectedID;
-
   return result
 };
 
@@ -139,13 +181,9 @@ function returnClass(query, arrayToPush){
   //console.log("selectedClasses: ", selectedClasses)
   for(key in selectedClasses){
     if(key === "length") break;
-      if(arrayToPush){
-        arrayToPush.push(selectedClasses[key])
-      }
-
+      if(arrayToPush) arrayToPush.push(selectedClasses[key]);
       result.push(selectedClasses[key])
     }
-  console.log("classes: ", result);
   return result
 }
 

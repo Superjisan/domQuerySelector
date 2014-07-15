@@ -4,6 +4,28 @@ var $ = function (selector) {
 
   this.querySelector = selector;
 
+   var elementsToGet = querySelectorParser(selector);
+
+   if(elementsToGet.second && elementsToGet.third){
+      console.log("elements to conditional is running");
+      if(elementsToGet.second.element === "class"){
+        returnTagClassesID(selector, elements)
+      } else {
+        returnTagIDClasses(selector, elements)
+      }
+   } else if (elementsToGet.second){
+      if(elementsToGet.first.element === "class"){
+
+      } else if (elementsToGet.first.element  === "id"){
+
+      } else if (elementsToGet.second.element === "class"){
+
+      } else {
+        returnTagIDs(selector, elements)
+      }
+
+   }
+
   if(selector === 'div'){
     returnTags(selector.toUpperCase(), elements)
   }else if(selector === 'img.some_class'){
@@ -15,9 +37,9 @@ var $ = function (selector) {
   }else if(selector === "input#some_id"){
     returnTagIDs(selector, elements)
   }else if(selector === "div#some_id.some_class"){
-    returnTagIDClasses(selector, elements)
+    //returnTagIDClasses(selector, elements)
   }else if( selector === "div.some_class#some_id"){
-    returnTagClassesID(selector, elements)
+    //returnTagClassesID(selector, elements)
   }
   return elements;
 } // end of $ function
@@ -35,12 +57,12 @@ function returnTags(tagName, arrayToPush){
   return result;
 };
 
-$.prototype.querySelectorParser(selector){
+function querySelectorParser(selector){
   var first, second, third;
   //check to see what the first element in the string is
   if(selector[0] === "."){
     //if class, check if it has an id element # in the string
-    if(selector.contains("#")){
+    if(selector.indexOf("#") !== -1){
       //parse string based on #
       var selectorArr = selector.split("#");
       first = { name : selectorArr[0] , element: "class"};
@@ -50,7 +72,7 @@ $.prototype.querySelectorParser(selector){
     }
   } else if (selector[0] === "#"){
     //make this a function
-    if(selector.contains(".")){
+    if(selector.indexOf(".") !== -1){
       //parse string based on .
       var selectorArr = selector.split(".");
       first = { name : selectorArr[0] , element: "id"};
@@ -59,35 +81,48 @@ $.prototype.querySelectorParser(selector){
       first = { name : selector, element : "id"}
     }
   } else { //assumption: you know that it starts with a tag
-    //check to see if string has both class and id
-    if(selector.contains("#") && selector.contains(".")){
-      //determine which comes first
-      var firstElemToSplit, secondElemToSplit;
-      var classIndex = selector.indexOf(".");
-      var idIndex = selector.indexOf("#");
-      if(classIndex < idIndex){
-        firstElemToParse = ".";
-        secondElemToSplit = "#";
-      }else{
-        firstElemToParse = "#";
-        secondElemToSplit = ".";
-      }
-      // to-do: set the right first, second, third object
-
-
-    }else if(selector.contains(".")){
-        //parse string based on .
-        var selectorArr = selector.split(".");
+      //check to see if string has both class and id
+      if(selector.indexOf("#") !== -1 && selector.indexOf(".") !== -1){
+        //determine which comes first
+        var firstElemToSplit, secondElemToSplit, thirdElemName, secondElemName;
+        var classIndex = selector.indexOf(".");
+        var idIndex = selector.indexOf("#");
+        if(classIndex < idIndex){
+          firstElemToSplit= "#";
+          thirdElemName = "id";
+          secondElemToSplit = ".";
+          secondElemName = "class"
+        }else{
+          firstElemToSplit = ".";
+          thirdElemName = "class";
+          secondElemToSplit = "#";
+          secondElemName = "id"
+        }
+        // to-do: set the right first, second, third object
+        var firstSplitArr = selector.split(firstElemToSplit)
+        third = { name: firstElemToSplit + firstSplitArr[1], element: thirdElemName };
+        var secondSplitArr = firstSplitArr[0].split(secondElemToSplit);
+        second = {name: secondElemToSplit + secondSplitArr[1], element: secondElemName}
+        first = {name : secondSplitArr[0], element: "tag"}
+      }else if(selector.indexOf(".") !== -1){
+          //parse string based on .
+          var selectorArr = selector.split(".");
+          first = { name : selectorArr[0] , element: "tag"};
+          second = { name : "." + selectorArr[1], element: "class"}
+      } else if (selector.indexOf("#") !== -1){
+        var selectorArr = selector.split("#");
         first = { name : selectorArr[0] , element: "tag"};
-        second = { name : "." + selectorArr[1], element: "class"}
-    } else if (selector.contains("#")){
-      var selectorArr = selector.split("#");
-      first = { name : selectorArr[0] , element: "tag"};
-      second = { name : "." + selectorArr[1], element: "id"}
-    } else {
-      first = {name : selector, element: "tag"}
-    }
+        second = { name : "." + selectorArr[1], element: "id"}
+      } else {
+        first = {name : selector, element: "tag"}
+      }
   }
+
+  var resultObj = {
+    first: first, second: second, third: third
+  };
+
+  console.log("Selector parser for "+ selector +":", resultObj);
 
   return {
     first: first, second: second, third: third
@@ -156,7 +191,6 @@ function returnTagClassesID(query, arrayToPush){
   var queryClass = queryArrbyClass[1];
 
   var selectedID = returnID("#"+queryID);
-  console.log("selectedID:", selectedID);
   var selectedIDclasses = selectedID.className;
 
   if(selectedID.tagName === queryTag.toUpperCase() && selectedIDclasses.indexOf(queryClass) !== -1){

@@ -7,39 +7,28 @@ var $ = function (selector) {
    var elementsToGet = querySelectorParser(selector);
 
    if(elementsToGet.second && elementsToGet.third){
-      console.log("elements to conditional is running");
-      if(elementsToGet.second.element === "class"){
-        returnTagClassesID(selector, elements)
-      } else {
-        returnTagIDClasses(selector, elements)
+      switch(elementsToGet.second.element){
+        case "class" :  returnTagClassOrID(selector, elements, elementsToGet);break;
+        default: returnTagClassOrID(selector,elements, elementsToGet); break;
       }
    } else if (elementsToGet.second){
-      if(elementsToGet.first.element === "class"){
-          return
-      } else if (elementsToGet.first.element  === "id"){
-
-      } else if (elementsToGet.second.element === "class"){
-        returnTagClasses(selector, elements)
-      } else {
-        returnTagIDs(selector, elements)
+      switch(elementsToGet.first.element){
+        case "class": return ;
+        case "id": return;
+        default:
+          switch(elementsToGet.second.element){
+            case "class": returnTagClasses(selector, elements); break;
+            default: returnTagIDs(selector, elements); break;
+          }
+          break;
       }
    } else {
-     if(elementsToGet.first.element === "class"){
-        returnClass(selector, elements)
-     } else if (elementsToGet.first.element === "id"){
-        returnID(selector, elements)
-     } else {
-       returnTags(selector.toUpperCase(), elements)
+     switch(elementsToGet.first.element){
+       case "class": returnClass(selector, elements); break ;
+       case "id": returnID(selector, elements); break;
+       default: returnTags(selector.toUpperCase(), elements); break;
      }
    }
-
-  if(selector === 'div'){
-    //returnTags(selector.toUpperCase(), elements)
-  }else if(selector === "#some_id"){
-    //returnID(selector, elements)
-  }else if(selector === ".some_class"){
-    //returnClass(selector, elements)
-  }
 
   return elements;
 } // end of $ function
@@ -57,30 +46,53 @@ function returnTags(tagName, arrayToPush){
   return result;
 };
 
+//function that retuns the dom element with the specific id
+function returnID(query, arrayToPush){
+  var result, idName = query.split("#").join(""), selectedID = document.getElementById(idName);
+  if(arrayToPush){ arrayToPush.push(selectedID);}
+  result = selectedID;
+  return result
+};
+
+//functiont that returns the dom element with the speicified class
+function returnClass(query, arrayToPush){
+  var result = []
+  var className = query.split(".").join("");
+  var selectedClasses = document.getElementsByClassName(className);
+  //console.log("selectedClasses: ", selectedClasses)
+  for(key in selectedClasses){
+    if(key === "length") break;
+      if(arrayToPush) arrayToPush.push(selectedClasses[key]);
+      result.push(selectedClasses[key])
+    }
+  return result
+}
+
 function querySelectorParser(selector){
   var first, second, third;
   //check to see what the first element in the string is
-  if(selector[0] === "."){
-    //if class, check if it has an id element # in the string
-    if(selector.indexOf("#") !== -1){
-      //parse string based on #
-      var selectorArr = selector.split("#");
-      first = { name : selectorArr[0] , element: "class"};
-      second = { name : "#" + selectorArr[1], element: "id"}
-    } else {
-      first = { name : selector, elemen : "class"}
-    }
-  } else if (selector[0] === "#"){
-    //make this a function
-    if(selector.indexOf(".") !== -1){
-      //parse string based on .
-      var selectorArr = selector.split(".");
-      first = { name : selectorArr[0] , element: "id"};
-      second = { name : "." + selectorArr[1], element: "class"}
-    } else {
-      first = { name : selector, element : "id"}
-    }
-  } else { //assumption: you know that it starts with a tag
+  switch(selector[0]){
+    case "." : //if class, check if it has an id element # in the string
+      if(selector.indexOf("#") !== -1){
+        //parse string based on #
+        var selectorArr = selector.split("#");
+        first = { name : selectorArr[0] , element: "class"};
+        second = { name : "#" + selectorArr[1], element: "id"}
+      } else {
+        first = { name : selector, element : "class"}
+      };
+      break;
+    case "#" :
+      if(selector.indexOf(".") !== -1){
+        //parse string based on .
+        var selectorArr = selector.split(".");
+        first = { name : selectorArr[0] , element: "id"};
+        second = { name : "." + selectorArr[1], element: "class"}
+      } else {
+        first = { name : selector, element : "id"}
+      };
+      break;
+    default: //assumption: you know that it starts with a tag
       //check to see if string has both class and id
       if(selector.indexOf("#") !== -1 && selector.indexOf(".") !== -1){
         //determine which comes first
@@ -88,15 +100,9 @@ function querySelectorParser(selector){
         var classIndex = selector.indexOf(".");
         var idIndex = selector.indexOf("#");
         if(classIndex < idIndex){
-          firstElemToSplit= "#";
-          thirdElemName = "id";
-          secondElemToSplit = ".";
-          secondElemName = "class"
+          firstElemToSplit= "#", thirdElemName = "id", secondElemToSplit = ".", secondElemName = "class";
         }else{
-          firstElemToSplit = ".";
-          thirdElemName = "class";
-          secondElemToSplit = "#";
-          secondElemName = "id"
+          firstElemToSplit = "."; thirdElemName = "class"; secondElemToSplit = "#"; secondElemName = "id"
         }
         // to-do: set the right first, second, third object
         var firstSplitArr = selector.split(firstElemToSplit)
@@ -112,21 +118,17 @@ function querySelectorParser(selector){
       } else if (selector.indexOf("#") !== -1){
         var selectorArr = selector.split("#");
         first = { name : selectorArr[0] , element: "tag"};
-        second = { name : "." + selectorArr[1], element: "id"}
+        second = { name : "#" + selectorArr[1], element: "id"}
       } else {
         first = {name : selector, element: "tag"}
-      }
+      }; break;
   }
 
   var resultObj = {
     first: first, second: second, third: third
   };
-
-  console.log("Selector parser for "+ selector +":", resultObj);
-
-  return {
-    first: first, second: second, third: third
-  }
+  //console.log("Selector parser for "+ selector +":", resultObj);
+  return resultObj
 }
 
 //function that returns the dom element if it is expressed by tag.class
@@ -161,63 +163,34 @@ function returnTagIDs(query, arrayToPush){
   }
 };
 
-function returnTagIDClasses(query, arrayToPush){
-  //parse div, id, class from query
-  var queryArrbyClass = query.split(".");
-  var querytagID = queryArrbyClass[0];
-  var queryClass = queryArrbyClass[1];
-  var queryArrByID = querytagID.split("#");
-  var queryTag =  queryArrByID[0];
-  var queryID = queryArrByID[1];
 
-  //return the class specified
-  var selectedClasses = returnClass("."+queryClass);
-
-  //check if tag and id matches
-  for (var i = 0; i < selectedClasses.length; i++){
-    var currentClass =  selectedClasses[i];
-    if (currentClass.tagName === queryTag.toUpperCase() && currentClass.id === queryID){
-      arrayToPush.push(currentClass);
+function returnTagClassOrID(query, arrayToPush, elements){
+  if(elements.third){
+   if(elements.third.element === "id"){
+     console.log("id elements", elements)
+     var selectedID = returnID(elements.third.name);
+     var selectedIDClasses = selectedID.className;
+     console.log("selectedIDClasses", selectedIDClasses);
+      if(selectedID.tagName = elements.first.name.toUpperCase() && selectedIDClasses.indexOf(elements.second.name.substring(1) !== -1)){
+        arrayToPush.push(selectedID);
+      }
+    }else{
+       var selectedClasses = returnClass(elements.third.name);
+       //check if tag and id matches
+        for (var i = 0; i < selectedClasses.length; i++){
+          var currentClass =  selectedClasses[i];
+          if (currentClass.tagName === elements.first.name.toUpperCase() && currentClass.id === elements.second.name.substring(1)){
+            arrayToPush.push(currentClass);
+          }
+        }
+      }
     }
-  }
-};
+   else if(elements.second){
+      if(elements.second.element === "id"){
 
-function returnTagClassesID(query, arrayToPush){
-  var queryArrByID = query.split("#");
-  var querytagClass =  queryArrByID[0];
-  var queryID = queryArrByID[1];
-  var queryArrbyClass = querytagClass.split(".")
-  var queryTag = queryArrbyClass[0];
-  var queryClass = queryArrbyClass[1];
+      } else {
 
-  var selectedID = returnID("#"+queryID);
-  var selectedIDclasses = selectedID.className;
-
-  if(selectedID.tagName === queryTag.toUpperCase() && selectedIDclasses.indexOf(queryClass) !== -1){
-    arrayToPush.push(selectedID);}
-}
-
-//function that retuns the dom element with the specific id
-function returnID(query, arrayToPush){
-  var result;
-  var idName = query.split("#").join("");
-  var selectedID = document.getElementById(idName);
-  if(arrayToPush){ arrayToPush.push(selectedID);}
-  result = selectedID;
-  return result
-};
-
-//functiont that returns the dom element with the speicified class
-function returnClass(query, arrayToPush){
-  var result = []
-  var className = query.split(".").join("");
-  var selectedClasses = document.getElementsByClassName(className);
-  //console.log("selectedClasses: ", selectedClasses)
-  for(key in selectedClasses){
-    if(key === "length") break;
-      if(arrayToPush) arrayToPush.push(selectedClasses[key]);
-      result.push(selectedClasses[key])
-    }
-  return result
-}
+      }
+   }
+ }
 
